@@ -152,37 +152,4 @@ public class BagOfWords {
 
 		return cosineSimilarity;
 	}
-	
-	/*public double cosineSimilarity(List<Double> v1, List<Double> v2) {
-
-		double cosineSimilarity = 0; // To be returned
-
-		// Calculate the numerator:
-		double dotProd = 0; // v1 x v2 (dot product of v1 and v2)
-		for(int i = 0; i < v1.size(); i++) {
-			dotProd += (v1.get(i) * v2.get(i));
-		}
-
-		// Calculate the denominator:
-		double magV1_sqrd = 0; // |v1|^2
-		double magV2_sqrd = 0; // |v2|^2
-
-		for(int i = 0; i < v1.size(); i++) {
-			magV1_sqrd += Math.pow(v1.get(i), 2);
-		}
-
-		for(int i = 0; i < v2.size(); i++) {
-			magV2_sqrd += Math.pow(v2.get(i), 2);
-		}
-
-		double magV1 = Math.pow(magV1_sqrd, 0.5); // |v1|
-		double magV2 = Math.pow(magV2_sqrd, 0.5); // |v2|
-
-		double magProd = magV1 * magV2; // |v1| x |v2|
-
-		// Divide to get the cosine similarity:
-		cosineSimilarity = dotProd / magProd;
-
-		return cosineSimilarity;
-	}*/
 }
