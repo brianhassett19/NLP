@@ -12,10 +12,7 @@ public class BagOfWords {
 	private String file; // Location of file to be used for bag of words model.
 	private List<String> preProcessesedStrings;
 	public Map<String, Integer> dictionary = new HashMap<>();  // Key: word; Value: integer index.
-	
-	// Conside calling theis a term document Matrix, see wikipedia:
-	public List<Map<Integer, Integer>> termFrequencyMatrix = new ArrayList<>(); // Key: integer index; Value: word count.
-	
+	public List<Map<Integer, Double>> termDocumentMatrix = new ArrayList<>(); // Key: integer index; Value: word count.
 	public List<Map<Integer, Double>> weightedTermFrequencyMatrix = new ArrayList<>(); // Key: integer index; Value: td-idf weight.
 	
 	/**
@@ -26,8 +23,8 @@ public class BagOfWords {
 		this.file = file;
 		this.preProcessesedStrings = preProcessStrings(this.file);
 		this.dictionary = createDictionary(preProcessesedStrings);
-		this.termFrequencyMatrix = createTermFrequencyMatrix(preProcessesedStrings, dictionary);
-		this.weightedTermFrequencyMatrix = WeightApplyer.apply_tfidf_Weights(this.dictionary.size(), termFrequencyMatrix); // Static reference to WeightApplyer
+		this.termDocumentMatrix = createTermFrequencyMatrix(preProcessesedStrings, dictionary);
+		this.weightedTermFrequencyMatrix = WeightApplyer.apply_tfidf_Weights(this.dictionary.size(), termDocumentMatrix); // Static reference to WeightApplyer
 	}
 
 	/**
@@ -85,24 +82,24 @@ public class BagOfWords {
 	 * @param preProcessesedStrings
 	 * @param dictionary
 	 * @return a list of term frequency vectors compiled from the preprocessed strings and dictionary		 */
-	private List<Map<Integer, Integer>> createTermFrequencyMatrix(List<String> preProcessesedStrings, Map<String, Integer> dictionary) {	
+	private List<Map<Integer, Double>> createTermFrequencyMatrix(List<String> preProcessesedStrings, Map<String, Integer> dictionary) {	
 		
 		for(String s: preProcessesedStrings) {
-			termFrequencyMatrix.add(createDocumentVector(s, dictionary));
+			termDocumentMatrix.add(createDocumentVector(s, dictionary));
 		}
 		
-		System.out.println("tfm size = " + termFrequencyMatrix.size()); // Optional
+		System.out.println("tfm size = " + termDocumentMatrix.size()); // Optional
 		
-		return termFrequencyMatrix;
+		return termDocumentMatrix;
 	}
 	
 	/**
 	 * @param sentence
 	 * @param dictionary
 	 * @return a frequency vector representing a sentence in the training data					 */
-	private Map<Integer, Integer> createDocumentVector(String sentence, Map<String, Integer> dictionary) {
+	private Map<Integer, Double> createDocumentVector(String sentence, Map<String, Integer> dictionary) {
 		
-		Map<Integer, Integer> doc = new HashMap<>();
+		Map<Integer, Double> doc = new HashMap<>();
 		
 		for(String s : sentence.split(" ")) {
 			int curKey = dictionary.get(s); // get the dictionary's index for the current word (to be used as a key in 'doc')
@@ -111,11 +108,11 @@ public class BagOfWords {
 			increment the count (i.e. the value for key 'curKey'). 
 			Otherwise, add the word to the vector with value 1:						*/
 			if(doc.containsKey(curKey)) {
-				int v = doc.get(curKey);
+				double v = doc.get(curKey);
 				doc.put(curKey, ++v);
 			}
 			else {
-				doc.put(curKey, 1);
+				doc.put(curKey, (double) 1);
 			}
 		}
 
@@ -123,7 +120,40 @@ public class BagOfWords {
 	}
 	
 	
-	/*public double cosineSimilarity(List<Integer> v1, List<T> v2) {
+	public double cosineSimilarity(Map<Integer, Double> v1, Map<Integer, Double> v2) {
+
+		double cosineSimilarity = 0; // To be returned
+
+		// Calculate the numerator:
+		double dotProd = 0; // v1 x v2 (dot product of v1 and v2)
+		for(int i = 0; i < v1.size(); i++) {
+			dotProd += (v1.get(i) * v2.get(i));
+		}
+
+		// Calculate the denominator:
+		double magV1_sqrd = 0; // |v1|^2
+		double magV2_sqrd = 0; // |v2|^2
+
+		for(int i = 0; i < v1.size(); i++) {
+			magV1_sqrd += Math.pow(v1.get(i), 2);
+		}
+
+		for(int i = 0; i < v2.size(); i++) {
+			magV2_sqrd += Math.pow(v2.get(i), 2);
+		}
+
+		double magV1 = Math.pow(magV1_sqrd, 0.5); // |v1|
+		double magV2 = Math.pow(magV2_sqrd, 0.5); // |v2|
+
+		double magProd = magV1 * magV2; // |v1| x |v2|
+
+		// Divide to get the cosine similarity:
+		cosineSimilarity = dotProd / magProd;
+
+		return cosineSimilarity;
+	}
+	
+	/*public double cosineSimilarity(List<Double> v1, List<Double> v2) {
 
 		double cosineSimilarity = 0; // To be returned
 
@@ -155,37 +185,4 @@ public class BagOfWords {
 
 		return cosineSimilarity;
 	}*/
-	
-	public double cosineSimilarity(List<Double> v1, List<Double> v2) {
-
-		double cosineSimilarity = 0; // To be returned
-
-		// Calculate the numerator:
-		double dotProd = 0; // v1 x v2 (dot product of v1 and v2)
-		for(int i = 0; i < v1.size(); i++) {
-			dotProd += (v1.get(i) * v2.get(i));
-		}
-
-		// Calculate the denominator:
-		double magV1_sqrd = 0; // |v1|^2
-		double magV2_sqrd = 0; // |v2|^2
-
-		for(int i = 0; i < v1.size(); i++) {
-			magV1_sqrd += Math.pow(v1.get(i), 2);
-		}
-
-		for(int i = 0; i < v2.size(); i++) {
-			magV2_sqrd += Math.pow(v2.get(i), 2);
-		}
-
-		double magV1 = Math.pow(magV1_sqrd, 0.5); // |v1|
-		double magV2 = Math.pow(magV2_sqrd, 0.5); // |v2|
-
-		double magProd = magV1 * magV2; // |v1| x |v2|
-
-		// Divide to get the cosine similarity:
-		cosineSimilarity = dotProd / magProd;
-
-		return cosineSimilarity;
-	}
 }

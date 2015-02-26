@@ -7,7 +7,7 @@ public class Document {
 	static int totalDocuments = 0;
 	int id;
 	String text;
-	Map<Integer, Integer> termFrequencyVector;
+	Map<Integer, Double> termFrequencyVector;
 	int label; // Corresponds to class_id in the corresponding category.
 
 	/* Constructors for text as the content of the document:	*/
@@ -38,7 +38,7 @@ public class Document {
 	 * @param id
 	 * @param termFrequencyVector
 	 * @param label				  */
-	public Document(int id, Map<Integer, Integer> termFrequencyVector, int label) {
+	public Document(int id, Map<Integer, Double> termFrequencyVector, int label) {
 		this.id = id;
 		this.termFrequencyVector = termFrequencyVector;
 		this.label = label;
@@ -48,7 +48,7 @@ public class Document {
 	/**
 	 * @param id
 	 * @param termFrequencyVector	*/
-	public Document(int id, Map<Integer, Integer> termFrequencyVector) {
+	public Document(int id, Map<Integer, Double> termFrequencyVector) {
 		this.id = id;
 		this.termFrequencyVector = termFrequencyVector;
 		totalDocuments++;

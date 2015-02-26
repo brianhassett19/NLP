@@ -47,7 +47,7 @@ public class NB_Classifier {
 		this.sentimentTrainingDataFileLocation = sentimentData;
 		this.bow = new BagOfWords(textData);
 		this.categories = categories;
-		this.trainingData = getTextTrainingData(bow.termFrequencyMatrix);
+		this.trainingData = getTextTrainingData(bow.termDocumentMatrix);
 		assignTrainingLabels();
 		setCategoryFrequencies();
 		this.wordFrequencies = train(trainingData, bow.dictionary.size());
@@ -120,7 +120,7 @@ public class NB_Classifier {
 	/**
 	 * @param vector
 	 * @return count of total number of words in a frequency vector (i.e. sum of a map's values).	 */
-	private int count(Map<Integer, Integer> vector) {
+	private int count(Map<Integer, Double> vector) {
 		//System.out.println(vector);
 		int count = 0;
 
@@ -136,10 +136,10 @@ public class NB_Classifier {
 	 * @return A list of Documents representing the text training data 
 	 * @throws FileNotFoundException
 	 * @throws IOException				 */
-	private List<Document> getTextTrainingData(List<Map<Integer, Integer>> termFrequencyMatrix) throws FileNotFoundException, IOException {
+	private List<Document> getTextTrainingData(List<Map<Integer, Double>> termFrequencyMatrix) throws FileNotFoundException, IOException {
 
 		int id = 0;
-		for(Map<Integer, Integer> vector: bow.termFrequencyMatrix) {
+		for(Map<Integer, Double> vector: bow.termDocumentMatrix) {
 			Document doc = new Document(id, vector);
 			trainingData.add(doc);
 			id++;
